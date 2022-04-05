@@ -46,6 +46,43 @@
   background-color: #777;
 }
 
+.logoutButton {
+  width: 20%;
+  font-size: 20px;
+}
+
+.dues {
+  border: 1px solid black;
+  margin: 0 auto;
+  display: table;
+  list-style-type: square;
+  text-align: left;
+}
+
+.backButton {
+  width: 20%;
+  font-size: 20px;
+}
+
+.payButton {
+  width: 100%;
+  font-size: 20px;
+}
+
+.paid {
+  background-color: lightgreen;
+}
+
+.unpaid {
+  background-color: lightyellow;
+}
+
+th,
+td {
+  border: 1px solid black;
+  padding: 5px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

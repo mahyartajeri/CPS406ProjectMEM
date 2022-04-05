@@ -10,11 +10,15 @@ function App() {
       name: "Mahyar",
       username: "mahyar420",
       password: "cps406",
+      booked: [],
+      paid: [],
     },
     {
       name: "Cedric",
       username: "cedric420",
       password: "cps406",
+      booked: [],
+      paid: [],
     },
   ];
 
@@ -27,6 +31,7 @@ function App() {
       d.setSeconds(0);
       d.setHours(18);
       let c = {
+        id: i,
         dateTime: d,
         coach: undefined,
         membersList: [],
@@ -60,6 +65,21 @@ function App() {
 
   function handleSelectedClass(e) {
     setSelectedClass(e.currentTarget.value);
+  }
+
+  function updateMembers(updatedMember) {
+    let membersCopy = [...members];
+    membersCopy.forEach((m) => {
+      if (m.username == updatedMember.username) {
+        m = { ...updatedMember };
+      }
+    });
+
+    setMembers(membersCopy);
+    if (updatedMember.username == memberAuthenticated.username) {
+      setMemberAuthenticated(updatedMember);
+    }
+    console.log(membersCopy);
   }
 
   function loginFunc(e) {
@@ -99,10 +119,18 @@ function App() {
     }
   }
 
+  function logoutFunc() {
+    setMemberAuthenticated(undefined);
+    setUsername("");
+    setPassword("");
+    setFullName("");
+  }
+
   function bookClass(e) {
     e.preventDefault();
     if (!memberAuthenticated) return;
     let classesCopy = [...classes];
+    let membersCopy = [...members];
     let found = false;
     let repeat = false;
     classesCopy.forEach((c) => {
@@ -111,6 +139,11 @@ function App() {
           !c.membersList.find((m) => m.username == memberAuthenticated.username)
         ) {
           c.membersList.push(memberAuthenticated);
+          membersCopy.forEach((m) => {
+            if (m.username == memberAuthenticated.username) {
+              m.booked.push(c.id);
+            }
+          });
           found = true;
         } else {
           alert("You have already signed up for this class");
@@ -123,10 +156,12 @@ function App() {
 
     console.log(classesCopy);
     setClasses(classesCopy);
+    setMembers(membersCopy);
   }
 
   function deleteBooking(e) {
     let classesCopy = [...classes];
+    let membersCopy = [...members];
     classesCopy.forEach((c) => {
       let foundMember;
       if (e.currentTarget.textContent == c.dateTime.toDateString()) {
@@ -138,10 +173,17 @@ function App() {
         c.membersList = c.membersList.filter(
           (m) => m.username != memberAuthenticated.username
         );
+        membersCopy.forEach((m) => {
+          if (m.username == memberAuthenticated.username) {
+            m.booked = m.booked.filter((id) => id != c.id);
+            m.paid = m.paid.filter((id) => id != c.id);
+          }
+        });
       }
     });
 
     setClasses(classesCopy);
+    setMembers(membersCopy);
   }
 
   return (
@@ -164,6 +206,9 @@ function App() {
           bookClass={bookClass}
           handleSelectedClass={handleSelectedClass}
           deleteBooking={deleteBooking}
+          logoutFunc={logoutFunc}
+          updateMembers={updateMembers}
+          member={memberAuthenticated}
         ></MemberPage>
       )}
     </div>

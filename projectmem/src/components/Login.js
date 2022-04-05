@@ -14,25 +14,36 @@ const Login = ({
           <>
             <label for="fullname">Full Name</label>
             <br></br>
-            <input type="text" onChange={handleFullName}></input>
+            <input
+              type="text"
+              className="textbox"
+              onChange={handleFullName}
+            ></input>
             <br></br>
           </>
         )}
         <label for="un">Username:</label>
         <br></br>
-        <input type="text" onChange={handleUsername} id="un" name="un"></input>
+        <input
+          type="text"
+          className="textbox"
+          onChange={handleUsername}
+          id="un"
+          name="un"
+        ></input>
         <br></br>
-        <label dor="pw">Password:</label>
+        <label for="pw">Password:</label>
         <br></br>
         <input
           type="password"
+          className="textbox"
           onChange={handlePassword}
           id="pw"
           name="pw"
         ></input>
         <br></br>
-        <input type="submit" value="Submit"></input>
-        <input type="reset" value="Reset"></input>
+        <input type="submit" className="regButton" value="Submit"></input>
+        <input type="reset" className="regButton" value="Reset"></input>
       </form>
     </div>
   );

@@ -32,9 +32,13 @@ const MainMenu = ({
         ></Login>
       )}
       {login ? (
-        <button onClick={toggleLogin}>Create Account</button>
+        <button className="regButton" onClick={toggleLogin}>
+          Create Account
+        </button>
       ) : (
-        <button onClick={toggleLogin}>Login Instead</button>
+        <button className="regButton" onClick={toggleLogin}>
+          Login Instead
+        </button>
       )}
     </div>
   );

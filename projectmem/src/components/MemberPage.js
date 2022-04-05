@@ -50,31 +50,33 @@ const MemberPage = ({
         <div className="schedule">
           <h2>Schedule a Class</h2>
 
-          <h3>Booked Classes</h3>
-          <ul id="bookedList" className="bookedList">
-            {classes.map((c) => {
-              let foundClass = c.membersList.find(
-                (m) => m.username == memberUserName
-              );
-              if (foundClass) {
-                return (
-                  <li
-                    className="booking"
-                    onClick={(e) => {
-                      document
-                        .getElementById("bookedList")
-                        .getElementsByTagName("li").length == 1 &&
-                        setEmptyBookings(true);
-                      deleteBooking(e);
-                    }}
-                  >
-                    {c.dateTime.toDateString()}
-                  </li>
+          <div className="bookedDiv">
+            <h3>Booked Classes</h3>
+            <ul id="bookedList" className="bookedList">
+              {classes.map((c) => {
+                let foundClass = c.membersList.find(
+                  (m) => m.username == memberUserName
                 );
-              }
-            })}
-            {emptyBookings && <li>No Bookings</li>}
-          </ul>
+                if (foundClass) {
+                  return (
+                    <li
+                      className="booking"
+                      onClick={(e) => {
+                        document
+                          .getElementById("bookedList")
+                          .getElementsByTagName("li").length == 1 &&
+                          setEmptyBookings(true);
+                        deleteBooking(e);
+                      }}
+                    >
+                      {c.dateTime.toDateString()}
+                    </li>
+                  );
+                }
+              })}
+            </ul>
+            {emptyBookings && <p className="empty">No Bookings</p>}
+          </div>
 
           <form
             onSubmit={(e) => {

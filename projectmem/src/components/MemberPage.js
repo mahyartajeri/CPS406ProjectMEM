@@ -18,20 +18,49 @@ const MemberPage = ({
   const [newTab, setNewTab] = useState(tab);
   const [emptyBookings, setEmptyBookings] = useState(true);
   const [paying, setPaying] = useState(false);
+  const [classID, setClassID] = useState(undefined);
+  const [creditCardInfo, setCreditCardInfo] = useState({
+    num: undefined,
+    exp: undefined,
+    sc: undefined,
+  });
 
   function openTab(tabNum) {
     setNewTab(tabNum);
     console.log(tabNum);
   }
 
-  function togglePaying(e) {
-    if (!paying) {
+  function payForClass(e) {
+    e.preventDefault();
+    if (!creditCardInfo.exp || !creditCardInfo.num || !creditCardInfo.sc) {
+      alert("Missing Information!");
+      return;
+    } else if (creditCardInfo.sc.length != 3) {
+      alert("A 3 Digit Security Code is Required!");
+      return;
+    } else {
       let memberCopy = { ...member };
-      if (!memberCopy.paid.includes(parseInt(e.currentTarget.value))) {
-        memberCopy.paid.push(parseInt(e.currentTarget.value));
+      if (!memberCopy.paid.includes(classID)) {
+        memberCopy.paid.push(classID);
+        memberCopy.pricesPaid.push(classes.find((c) => c.id == classID).price);
       }
       updateMembers(member);
-      console.log("WOWWW", member);
+      togglePaying();
+    }
+    console.log(member);
+  }
+
+  function togglePaying(e) {
+    if (!paying) {
+      let id = parseInt(e.currentTarget.value);
+      setClassID(id);
+    } else {
+      setClassID(undefined);
+      setCreditCardInfo({
+        num: undefined,
+        exp: undefined,
+        sc: undefined,
+      });
     }
     setPaying(!paying);
   }
@@ -96,6 +125,8 @@ const MemberPage = ({
           </form>
 
           <Logout logoutFunc={logoutFunc}></Logout>
+          <br></br>
+          <br></br>
         </div>
       )}
       {newTab == 1 && !paying && (
@@ -120,7 +151,7 @@ const MemberPage = ({
                     <tr className="paid">
                       <td>{c.dateTime.toDateString()}</td>
                       <td>Coach Carter</td>
-                      <td>$10.00</td>
+                      <td>${c.price}</td>
                       <td>Paid</td>
                     </tr>
                   ) : (
@@ -142,11 +173,71 @@ const MemberPage = ({
               )}
             </tbody>
           </table>
+
+          <Logout logoutFunc={logoutFunc}></Logout>
+          <br></br>
+          <br></br>
         </div>
       )}
 
       {newTab == 1 && paying && (
-        <div>
+        <div className="payingDiv">
+          <form>
+            <label for="creditCardNumber" id="creditCardNumber">
+              Credit Card Number
+            </label>
+            <br></br>
+            <input
+              onChange={(e) => {
+                let creditCardInfoCopy = {
+                  ...creditCardInfo,
+                  num: e.currentTarget.value,
+                };
+                setCreditCardInfo(creditCardInfoCopy);
+              }}
+              type="text"
+              id="creditCardNumber"
+            ></input>
+            <br></br>
+            <label for="exipiryDate" id="expiryDate">
+              Expiry Date
+            </label>
+            <br></br>
+            <input
+              onChange={(e) => {
+                let creditCardInfoCopy = {
+                  ...creditCardInfo,
+                  exp: e.currentTarget.value,
+                };
+                setCreditCardInfo(creditCardInfoCopy);
+              }}
+              type="text"
+              id="expiryDate"
+            ></input>
+            <br></br>
+            <label for="securityCode" id="securityCode">
+              Security Code
+            </label>
+            <br></br>
+            <input
+              onChange={(e) => {
+                let creditCardInfoCopy = {
+                  ...creditCardInfo,
+                  sc: e.currentTarget.value,
+                };
+                setCreditCardInfo(creditCardInfoCopy);
+              }}
+              type="text"
+              id="securityCode"
+            ></input>
+            <br></br>
+
+            <input
+              type="submit"
+              onClick={(e) => payForClass(e)}
+              value="Process Payment"
+            ></input>
+          </form>
           <button className="backButton" onClick={(e) => togglePaying(e)}>
             Back
           </button>

@@ -43,7 +43,7 @@ const Login = ({
         ></input>
         <br></br>
         <input type="submit" className="regButton" value="Submit"></input>
-        <input type="reset" className="regButton" value="Reset"></input>
+        <input type="reset" className="regButton" value="Clear"></input>
       </form>
     </div>
   );

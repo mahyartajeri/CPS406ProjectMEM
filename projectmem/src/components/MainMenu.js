@@ -7,22 +7,32 @@ const MainMenu = ({
   handleUsername,
   handlePassword,
   handleFullName,
+  handleTreasurerPassword,
+  loginTreasurerFunc,
+  setTreasurerPassword,
 }) => {
   const [login, setLogin] = useState(true);
+  const [treasurer, setTreasurer] = useState(false);
 
   function toggleLogin() {
     setLogin(!login);
   }
+
+  function toggleTreasurer() {
+    setTreasurer(!treasurer);
+  }
+
   return (
     <div>
-      {login ? (
+      {login && !treasurer && (
         <Login
           func={loginFunc}
           handleUsername={handleUsername}
           handlePassword={handlePassword}
           newAccount={false}
         ></Login>
-      ) : (
+      )}
+      {!login && !treasurer && (
         <Login
           func={createAccountFunc}
           newAccount={true}
@@ -31,14 +41,50 @@ const MainMenu = ({
           handleFullName={handleFullName}
         ></Login>
       )}
-      {login ? (
-        <button className="regButton" onClick={toggleLogin}>
-          Create Account
-        </button>
-      ) : (
+      {login && !treasurer && (
+        <>
+          <button className="regButton" onClick={toggleLogin}>
+            Create Account
+          </button>
+          <button className="treasurerButton" onClick={toggleTreasurer}>
+            Login as Treasurer
+          </button>
+        </>
+      )}
+      {!login && !treasurer && (
         <button className="regButton" onClick={toggleLogin}>
           Login Instead
         </button>
+      )}
+      {treasurer && (
+        <>
+          <form onSubmit={loginTreasurerFunc}>
+            <label for="tpassword" id="tpassword">
+              Treasurer Password
+            </label>
+            <br></br>
+            <input
+              type="password"
+              onChange={handleTreasurerPassword}
+              id="tpassword"
+            ></input>
+            <input
+              type="submit"
+              onChange={handleTreasurerPassword}
+              value="Login"
+            ></input>
+          </form>
+
+          <button
+            className="regButton"
+            onClick={() => {
+              toggleTreasurer();
+              setTreasurerPassword("");
+            }}
+          >
+            Login As Member Instead
+          </button>
+        </>
       )}
     </div>
   );

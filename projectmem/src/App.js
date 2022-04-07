@@ -2,6 +2,7 @@ import "./App.css";
 import MainMenu from "./components/MainMenu";
 import MemberPage from "./components/MemberPage";
 import { useState } from "react";
+import TreasurerPage from "./components/TreasurerPage";
 
 function App() {
   // temp
@@ -12,6 +13,8 @@ function App() {
       password: "cps406",
       booked: [],
       paid: [],
+      prices: [],
+      pricesPaid: [],
     },
     {
       name: "Cedric",
@@ -19,6 +22,8 @@ function App() {
       password: "cps406",
       booked: [],
       paid: [],
+      prices: [],
+      pricesPaid: [],
     },
   ];
 
@@ -35,6 +40,7 @@ function App() {
         dateTime: d,
         coach: undefined,
         membersList: [],
+        price: 10,
       };
       createdClasses.push(c);
     }
@@ -50,6 +56,10 @@ function App() {
   const [memberTab, setMemberTab] = useState(0);
   const [classes, setClasses] = useState(createClasses);
   const [selectedClass, setSelectedClass] = useState(undefined);
+  const [treasurerAuthenticated, setTreasurerAuthenticated] = useState(
+    undefined
+  );
+  const [treasurerPassword, setTreasurerPassword] = useState("");
 
   function handleUsername(e) {
     setUsername(e.currentTarget.value);
@@ -65,6 +75,10 @@ function App() {
 
   function handleSelectedClass(e) {
     setSelectedClass(e.currentTarget.value);
+  }
+
+  function handleTreasurerPassword(e) {
+    setTreasurerPassword(e.currentTarget.value);
   }
 
   function updateMembers(updatedMember) {
@@ -100,6 +114,15 @@ function App() {
     }
   }
 
+  function loginTreasurerFunc(e) {
+    e.preventDefault();
+    if (treasurerPassword == "cps406") {
+      setTreasurerAuthenticated(true);
+    } else {
+      alert("Incorrect Treasurer Password!");
+    }
+  }
+
   function createAccountFunc(e) {
     e.preventDefault();
     const mem = members.find((member) => member.username == username);
@@ -111,6 +134,10 @@ function App() {
         name: fullName,
         username: username,
         password: password,
+        booked: [],
+        paid: [],
+        prices: [],
+        pricesPaid: [],
       };
       let membersCopy = [...members, newMember];
       setMembers(membersCopy);
@@ -124,6 +151,11 @@ function App() {
     setUsername("");
     setPassword("");
     setFullName("");
+  }
+
+  function logoutTreasurerFunc() {
+    setTreasurerAuthenticated(false);
+    setTreasurerPassword("");
   }
 
   function bookClass(e) {
@@ -142,6 +174,7 @@ function App() {
           membersCopy.forEach((m) => {
             if (m.username == memberAuthenticated.username) {
               m.booked.push(c.id);
+              m.prices.push(c.price);
             }
           });
           found = true;
@@ -175,8 +208,12 @@ function App() {
         );
         membersCopy.forEach((m) => {
           if (m.username == memberAuthenticated.username) {
+            let pricesIndex = m.booked.indexOf(c.id);
             m.booked = m.booked.filter((id) => id != c.id);
+            let pricesPaidIndex = m.paid.indexOf(c.id);
             m.paid = m.paid.filter((id) => id != c.id);
+            m.prices.splice(pricesIndex, 1);
+            m.pricesPaid.splice(pricesPaidIndex, 1);
           }
         });
       }
@@ -188,15 +225,19 @@ function App() {
 
   return (
     <div className="App">
-      {!memberAuthenticated ? (
+      {!memberAuthenticated && !treasurerAuthenticated && (
         <MainMenu
           loginFunc={loginFunc}
           handleUsername={handleUsername}
           handlePassword={handlePassword}
           handleFullName={handleFullName}
           createAccountFunc={createAccountFunc}
+          handleTreasurerPassword={handleTreasurerPassword}
+          loginTreasurerFunc={loginTreasurerFunc}
+          setTreasurerPassword={setTreasurerPassword}
         ></MainMenu>
-      ) : (
+      )}
+      {memberAuthenticated && !treasurerAuthenticated && (
         <MemberPage
           memberName={memberAuthenticated.name}
           memberUserName={memberAuthenticated.username}
@@ -210,6 +251,16 @@ function App() {
           updateMembers={updateMembers}
           member={memberAuthenticated}
         ></MemberPage>
+      )}
+
+      {treasurerAuthenticated && !memberAuthenticated && (
+        <>
+          <TreasurerPage
+            classes={classes}
+            members={members}
+            logoutFunc={logoutTreasurerFunc}
+          ></TreasurerPage>
+        </>
       )}
     </div>
   );

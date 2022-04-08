@@ -7,9 +7,13 @@ const MainMenu = ({
   handleUsername,
   handlePassword,
   handleFullName,
+  handlePhoneNumber,
+  handleAddress,
+  handleIsCoach,
   handleTreasurerPassword,
   loginTreasurerFunc,
   setTreasurerPassword,
+  resetCredentials,
 }) => {
   const [login, setLogin] = useState(true);
   const [treasurer, setTreasurer] = useState(false);
@@ -30,6 +34,7 @@ const MainMenu = ({
           handleUsername={handleUsername}
           handlePassword={handlePassword}
           newAccount={false}
+          resetCredentials={resetCredentials}
         ></Login>
       )}
       {!login && !treasurer && (
@@ -39,20 +44,42 @@ const MainMenu = ({
           handleUsername={handleUsername}
           handlePassword={handlePassword}
           handleFullName={handleFullName}
+          handlePhoneNumber={handlePhoneNumber}
+          handleAddress={handleAddress}
+          handleIsCoach={handleIsCoach}
+          resetCredentials={resetCredentials}
         ></Login>
       )}
       {login && !treasurer && (
         <>
-          <button className="regButton" onClick={toggleLogin}>
+          <button
+            className="regButton"
+            onClick={() => {
+              toggleLogin();
+              resetCredentials();
+            }}
+          >
             Create Account
           </button>
-          <button className="treasurerButton" onClick={toggleTreasurer}>
+          <button
+            className="treasurerButton"
+            onClick={() => {
+              toggleTreasurer();
+              resetCredentials();
+            }}
+          >
             Login as Treasurer
           </button>
         </>
       )}
       {!login && !treasurer && (
-        <button className="regButton" onClick={toggleLogin}>
+        <button
+          className="regButton"
+          onClick={() => {
+            toggleLogin();
+            resetCredentials();
+          }}
+        >
           Login Instead
         </button>
       )}

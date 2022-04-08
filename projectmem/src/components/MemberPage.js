@@ -30,6 +30,14 @@ const MemberPage = ({
     console.log(tabNum);
   }
 
+  function resetPay() {
+    setCreditCardInfo({
+      num: undefined,
+      exp: undefined,
+      sc: undefined,
+    });
+  }
+
   function payForClass(e) {
     e.preventDefault();
     if (!creditCardInfo.exp || !creditCardInfo.num || !creditCardInfo.sc) {
@@ -68,11 +76,26 @@ const MemberPage = ({
   return (
     <>
       <h1 className="welcome">Welcome, {memberName}</h1>
-      <button className="tablink" onClick={() => openTab(0)}>
+      <button
+        className="tablink"
+        onClick={() => {
+          openTab(0);
+          resetPay();
+        }}
+      >
         Schedule
       </button>
       <button className="tablink" onClick={() => openTab(1)}>
         Payment
+      </button>
+      <button
+        className="tablink"
+        onClick={() => {
+          openTab(2);
+          resetPay();
+        }}
+      >
+        Inbox
       </button>
 
       {newTab == 0 && (
@@ -150,15 +173,15 @@ const MemberPage = ({
                     .paid.includes(c.id) ? (
                     <tr className="paid">
                       <td>{c.dateTime.toDateString()}</td>
-                      <td>Coach Carter</td>
+                      <td>{c.coach ? "Coach " + c.coach.name : "N/A"}</td>
                       <td>${c.price}</td>
                       <td>Paid</td>
                     </tr>
                   ) : (
                     <tr className="unpaid">
                       <td>{c.dateTime.toDateString()}</td>
-                      <td>Coach Carter</td>
-                      <td>$10.00</td>
+                      <td>{c.coach ? "Coach " + c.coach.name : "N/A"}</td>
+                      <td>${c.price}</td>
                       <td>
                         <button
                           className="payButton"
@@ -242,6 +265,27 @@ const MemberPage = ({
             Back
           </button>
         </div>
+      )}
+      {newTab == 2 && (
+        <>
+          <h2>Messages Inbox</h2>
+          <hr></hr>
+          <ul>
+            {member.inbox.map((message) => (
+              <>
+                <li className="inboxMessage">
+                  <b className="from">From: {message.from}</b>
+                  <p className="smallIndent">{"\t" + message.msg}</p>
+                </li>
+                <hr></hr>
+              </>
+            ))}
+          </ul>
+
+          <Logout logoutFunc={logoutFunc}></Logout>
+          <br></br>
+          <br></br>
+        </>
       )}
     </>
   );

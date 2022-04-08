@@ -3,27 +3,34 @@ import MainMenu from "./components/MainMenu";
 import MemberPage from "./components/MemberPage";
 import { useState } from "react";
 import TreasurerPage from "./components/TreasurerPage";
+import CoachPage from "./components/CoachPage";
 
 function App() {
   // temp
   const mems = [
     {
       name: "Mahyar",
+      phoneNumber: 6475541352,
+      address: "17 Acre Street",
       username: "mahyar420",
       password: "cps406",
       booked: [],
       paid: [],
       prices: [],
       pricesPaid: [],
+      inbox: [],
     },
     {
       name: "Cedric",
+      phoneNumber: 9053239352,
+      address: "309 Coconut Avenue",
       username: "cedric420",
       password: "cps406",
       booked: [],
       paid: [],
       prices: [],
       pricesPaid: [],
+      inbox: [],
     },
   ];
 
@@ -52,6 +59,9 @@ function App() {
   const [password, setPassword] = useState("");
   const [members, setMembers] = useState(mems);
   const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [isCoach, setIsCoach] = useState(false);
   const [memberAuthenticated, setMemberAuthenticated] = useState(undefined);
   const [memberTab, setMemberTab] = useState(0);
   const [classes, setClasses] = useState(createClasses);
@@ -60,6 +70,15 @@ function App() {
     undefined
   );
   const [treasurerPassword, setTreasurerPassword] = useState("");
+
+  function resetCredentials() {
+    setUsername("");
+    setPassword("");
+    setFullName("");
+    setPhoneNumber("");
+    setAddress("");
+    setIsCoach(false);
+  }
 
   function handleUsername(e) {
     setUsername(e.currentTarget.value);
@@ -71,6 +90,19 @@ function App() {
 
   function handleFullName(e) {
     setFullName(e.currentTarget.value);
+  }
+
+  function handlePhoneNumber(e) {
+    setPhoneNumber(e.currentTarget.value);
+  }
+
+  function handleIsCoach(e) {
+    setIsCoach(e.currentTarget.checked);
+    console.log(e.currentTarget.checked);
+  }
+
+  function handleAddress(e) {
+    setAddress(e.currentTarget.value);
   }
 
   function handleSelectedClass(e) {
@@ -90,7 +122,10 @@ function App() {
     });
 
     setMembers(membersCopy);
-    if (updatedMember.username == memberAuthenticated.username) {
+    if (
+      updatedMember.username == memberAuthenticated.username &&
+      !memberAuthenticated.isCoach
+    ) {
       setMemberAuthenticated(updatedMember);
     }
     console.log(membersCopy);
@@ -132,12 +167,16 @@ function App() {
     } else {
       let newMember = {
         name: fullName,
+        phoneNumber: phoneNumber,
+        address: address,
         username: username,
         password: password,
+        isCoach: isCoach,
         booked: [],
         paid: [],
         prices: [],
         pricesPaid: [],
+        inbox: [],
       };
       let membersCopy = [...members, newMember];
       setMembers(membersCopy);
@@ -223,6 +262,18 @@ function App() {
     setMembers(membersCopy);
   }
 
+  function enrollCoachFunc(id) {
+    let classesCopy = [...classes];
+
+    classesCopy.forEach((c) => {
+      if (c.id == id) {
+        c.coach = memberAuthenticated;
+      }
+    });
+
+    setClasses(classesCopy);
+  }
+
   return (
     <div className="App">
       {!memberAuthenticated && !treasurerAuthenticated && (
@@ -231,27 +282,33 @@ function App() {
           handleUsername={handleUsername}
           handlePassword={handlePassword}
           handleFullName={handleFullName}
+          handlePhoneNumber={handlePhoneNumber}
+          handleAddress={handleAddress}
+          handleIsCoach={handleIsCoach}
           createAccountFunc={createAccountFunc}
           handleTreasurerPassword={handleTreasurerPassword}
           loginTreasurerFunc={loginTreasurerFunc}
           setTreasurerPassword={setTreasurerPassword}
+          resetCredentials={resetCredentials}
         ></MainMenu>
       )}
-      {memberAuthenticated && !treasurerAuthenticated && (
-        <MemberPage
-          memberName={memberAuthenticated.name}
-          memberUserName={memberAuthenticated.username}
-          tab={memberTab}
-          updateTab={setMemberTab}
-          classes={classes}
-          bookClass={bookClass}
-          handleSelectedClass={handleSelectedClass}
-          deleteBooking={deleteBooking}
-          logoutFunc={logoutFunc}
-          updateMembers={updateMembers}
-          member={memberAuthenticated}
-        ></MemberPage>
-      )}
+      {memberAuthenticated &&
+        !treasurerAuthenticated &&
+        !memberAuthenticated.isCoach && (
+          <MemberPage
+            memberName={memberAuthenticated.name}
+            memberUserName={memberAuthenticated.username}
+            tab={memberTab}
+            updateTab={setMemberTab}
+            classes={classes}
+            bookClass={bookClass}
+            handleSelectedClass={handleSelectedClass}
+            deleteBooking={deleteBooking}
+            logoutFunc={logoutFunc}
+            updateMembers={updateMembers}
+            member={memberAuthenticated}
+          ></MemberPage>
+        )}
 
       {treasurerAuthenticated && !memberAuthenticated && (
         <>
@@ -259,7 +316,23 @@ function App() {
             classes={classes}
             members={members}
             logoutFunc={logoutTreasurerFunc}
+            setMembers={setMembers}
           ></TreasurerPage>
+        </>
+      )}
+      {memberAuthenticated && memberAuthenticated.isCoach && (
+        <>
+          <CoachPage
+            classes={classes}
+            members={members}
+            logoutFunc={logoutFunc}
+            members={members}
+            memberName={memberAuthenticated.name}
+            member={memberAuthenticated}
+            enrollCoachFunc={enrollCoachFunc}
+            handleSelectedClass={handleSelectedClass}
+            setMembers={setMembers}
+          ></CoachPage>
         </>
       )}
     </div>

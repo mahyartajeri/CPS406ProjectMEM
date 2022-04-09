@@ -142,6 +142,18 @@ const TreasurerPage = ({ classes, members, setMembers, logoutFunc }) => {
     return sum;
   }
 
+  function giveDiscount(username) {
+    let membersCopy = [...members];
+    membersCopy.forEach((m) => {
+      if (m.username == username) {
+        m.discounts++;
+      }
+    });
+
+    setMembers(membersCopy);
+    console.log(membersCopy);
+  }
+
   function openTab(tabNum) {
     setNewTab(tabNum);
   }
@@ -360,6 +372,7 @@ const TreasurerPage = ({ classes, members, setMembers, logoutFunc }) => {
                   <th onClick={() => sortTable(4)}>Paid Classes</th>
                   <th onClick={() => sortTable(5)}>Overdue Payments</th>
                   <th onClick={() => sortTable(6)}>Attended Classes</th>
+                  <th>Give Discount</th>
                 </tr>
               </thead>
               <tbody>
@@ -374,6 +387,14 @@ const TreasurerPage = ({ classes, members, setMembers, logoutFunc }) => {
                         <td>{m.paid.length}</td>
                         <td>{calculateOverduePayments(m)}</td>
                         <td>{calculateAttendedClasses(m)}</td>
+                        <td>
+                          <button
+                            value={m.username}
+                            onClick={(e) => giveDiscount(e.currentTarget.value)}
+                          >
+                            Give 10% Discount (Single Use)
+                          </button>
+                        </td>
                       </tr>
                     );
                   }
@@ -458,7 +479,10 @@ const TreasurerPage = ({ classes, members, setMembers, logoutFunc }) => {
 
             {classDetails && (
               <>
-                <h2>Members Enrolled</h2>
+                <h2>
+                  Members Enrolled for Class on{" "}
+                  {classes.find((c) => c.id == classID).dateTime.toDateString()}
+                </h2>
                 <table className="memberslog">
                   <thead>
                     <tr>

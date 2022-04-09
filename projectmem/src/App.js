@@ -1,12 +1,13 @@
 import "./App.css";
 import MainMenu from "./components/MainMenu";
 import MemberPage from "./components/MemberPage";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TreasurerPage from "./components/TreasurerPage";
 import CoachPage from "./components/CoachPage";
 
 function App() {
   // temp
+  /*
   const mems = [
     {
       name: "Mahyar",
@@ -14,11 +15,13 @@ function App() {
       address: "17 Acre Street",
       username: "mahyar420",
       password: "cps406",
+      isCoach: false,
       booked: [],
       paid: [],
       prices: [],
       pricesPaid: [],
       inbox: [],
+      discounts: 0,
     },
     {
       name: "Cedric",
@@ -26,13 +29,30 @@ function App() {
       address: "309 Coconut Avenue",
       username: "cedric420",
       password: "cps406",
+      isCoach: false,
       booked: [],
       paid: [],
       prices: [],
       pricesPaid: [],
       inbox: [],
+      discounts: 0,
+    },
+    {
+      name: "John Doe",
+      phoneNumber: 6475541352,
+      address: "55 Crane Road",
+      username: "john420",
+      password: "cps406",
+      isCoach: true,
+      booked: [],
+      paid: [],
+      prices: [],
+      pricesPaid: [],
+      inbox: [],
+      discounts: 0,
     },
   ];
+  */
 
   function createClasses() {
     let createdClasses = [];
@@ -57,7 +77,7 @@ function App() {
   // useStates
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [members, setMembers] = useState(mems);
+  const [members, setMembers] = useState([]);
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
@@ -70,6 +90,49 @@ function App() {
     undefined
   );
   const [treasurerPassword, setTreasurerPassword] = useState("");
+
+  //useEffect at mount
+  useEffect(() => {
+    const getMembers = async () => {
+      const membersFromServer = await fetchMembers().catch((e) => {
+        console.log(e);
+      });
+      setMembers(membersFromServer);
+    };
+
+    getMembers();
+  }, []);
+
+  // useEffect when members are changed
+  useEffect(() => {
+    const updateMems = async () => {
+      const res = await fetch(
+        "https://json.extendsclass.com/bin/69a6bd0cdf1a",
+        {
+          method: "PUT",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify(members),
+        }
+      );
+    };
+
+    if (members.length > 0) updateMems();
+    console.log(members);
+  }, [members]);
+
+  // fetch Members from json file
+  const fetchMembers = async () => {
+    const res = await fetch(
+      "https://json.extendsclass.com/bin/69a6bd0cdf1a"
+    ).catch((e) => {
+      console.log(e);
+    });
+    const data = await res.json();
+    console.log(data);
+    return data;
+  };
 
   function resetCredentials() {
     setUsername("");
@@ -115,11 +178,17 @@ function App() {
 
   function updateMembers(updatedMember) {
     let membersCopy = [...members];
-    membersCopy.forEach((m) => {
+    /*membersCopy.forEach((m) => {
       if (m.username == updatedMember.username) {
         m = { ...updatedMember };
       }
     });
+    */
+    for (let i = 0; i < membersCopy.length; i++) {
+      if (membersCopy[i].username == updatedMember.username) {
+        membersCopy[i] = updatedMember;
+      }
+    }
 
     setMembers(membersCopy);
     if (
@@ -177,6 +246,7 @@ function App() {
         prices: [],
         pricesPaid: [],
         inbox: [],
+        discounts: 0,
       };
       let membersCopy = [...members, newMember];
       setMembers(membersCopy);

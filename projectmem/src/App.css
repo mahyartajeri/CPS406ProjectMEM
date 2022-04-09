@@ -6,11 +6,6 @@ label {
   font-size: 3em;
 }
 
-select {
-  width: 30vw;
-  height: 30vw;
-}
-
 .smallIndent {
   margin-left: 40px;
 }

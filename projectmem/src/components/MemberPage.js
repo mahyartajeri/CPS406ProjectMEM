@@ -50,9 +50,18 @@ const MemberPage = ({
       let memberCopy = { ...member };
       if (!memberCopy.paid.includes(classID)) {
         memberCopy.paid.push(classID);
-        memberCopy.pricesPaid.push(classes.find((c) => c.id == classID).price);
+        if (memberCopy.discounts > 0) {
+          memberCopy.pricesPaid.push(
+            classes.find((c) => c.id == classID).price * 0.9
+          );
+          memberCopy.discounts--;
+        } else {
+          memberCopy.pricesPaid.push(
+            classes.find((c) => c.id == classID).price
+          );
+        }
       }
-      updateMembers(member);
+      updateMembers(memberCopy);
       togglePaying();
     }
     console.log(member);
@@ -155,6 +164,7 @@ const MemberPage = ({
       {newTab == 1 && !paying && (
         <div className="payment">
           <h2>Manage Payment</h2>
+          <h4>Remaining Discounts (10% off): {member.discounts}</h4>
           <table className="dues">
             <thead>
               <tr>
@@ -174,14 +184,14 @@ const MemberPage = ({
                     <tr className="paid">
                       <td>{c.dateTime.toDateString()}</td>
                       <td>{c.coach ? "Coach " + c.coach.name : "N/A"}</td>
-                      <td>${c.price}</td>
+                      <td>${member.pricesPaid[member.paid.indexOf(c.id)]}</td>
                       <td>Paid</td>
                     </tr>
                   ) : (
                     <tr className="unpaid">
                       <td>{c.dateTime.toDateString()}</td>
                       <td>{c.coach ? "Coach " + c.coach.name : "N/A"}</td>
-                      <td>${c.price}</td>
+                      <td>${member.discounts > 0 ? c.price * 0.9 : c.price}</td>
                       <td>
                         <button
                           className="payButton"
